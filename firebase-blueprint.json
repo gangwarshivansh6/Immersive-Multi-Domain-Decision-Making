@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with authentication and role assignments",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique user identifier matching Firebase Auth UID"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name of the user"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["trainee", "instructor", "admin"],
+          "description": "Assigned simulation role"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of account creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last profile update"
+        }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "Activity": {
+      "title": "User Activity Log",
+      "description": "Record of trainee decisions, task updates, or instructor injects",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique activity ID"
+        },
+        "userId": {
+          "type": "string",
+          "description": "User ID who performed the action"
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Email of user"
+        },
+        "actionType": {
+          "type": "string",
+          "description": "Type of action (decision_submitted, task_updated, report_acknowledged, aar_saved)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Brief title of the action"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description or rationale"
+        },
+        "domain": {
+          "type": "string",
+          "description": "Operational domain (land, air, cyber, ew, joint)"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "ISO timestamp of activity"
+        }
+      },
+      "required": ["id", "userId", "actionType", "title", "timestamp"]
+    },
+    "TrainingRecord": {
+      "title": "Trainee Session Record",
+      "description": "Completed session evaluation and certificate record",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique session record ID"
+        },
+        "userId": {
+          "type": "string",
+          "description": "User ID of participant"
+        },
+        "scenarioTitle": {
+          "type": "string",
+          "description": "Title of the scenario"
+        },
+        "difficulty": {
+          "type": "string",
+          "description": "Difficulty level"
+        },
+        "overallScore": {
+          "type": "number",
+          "description": "Overall score achieved 0-100"
+        },
+        "decisionsCount": {
+          "type": "number",
+          "description": "Count of decisions evaluated"
+        },
+        "alertsCount": {
+          "type": "number",
+          "description": "Count of restriction alerts triggered"
+        },
+        "completedAt": {
+          "type": "string",
+          "description": "Completion timestamp"
+        }
+      },
+      "required": ["id", "userId", "scenarioTitle", "overallScore", "completedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles partitioned by user ID"
+    },
+    "/users/{userId}/activities/{activityId}": {
+      "schema": "Activity",
+      "description": "User-specific activity event log"
+    },
+    "/training_records/{recordId}": {
+      "schema": "TrainingRecord",
+      "description": "Completed evaluation reports"
+    }
+  }
+}

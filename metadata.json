@@ -1,0 +1,6 @@
+{
+  "name": "Immersive Multi-Domain Decision-Making Trainer",
+  "description": "Tactical training simulator for decision-making under communication degradation, delayed reports, and conflicting multi-domain intelligence (SIH26248).",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

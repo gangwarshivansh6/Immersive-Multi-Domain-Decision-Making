@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isInstructorOrAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'aditiwari026@gmail.com' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['instructor', 'admin']
+      );
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connection validation endpoint
+    match /test/{docId} {
+      allow get: if true;
+    }
+
+    // User profiles and activities
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+
+      // User activities subcollection
+      match /activities/{activityId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Completed training records
+    match /training_records/{recordId} {
+      allow get: if isSignedIn() && (resource.data.userId == request.auth.uid || isInstructorOrAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isInstructorOrAdmin());
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isInstructorOrAdmin());
+    }
+  }
+}
